@@ -1,11 +1,30 @@
 <resources>
 
+    <!-- Thanks to the following link for guidance since the method provided in the android
+         documentation did not get the theme correct.
+
+         https://guides.codepath.com/android/using-the-app-toolbar
+    -->
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!--
+      Theme.AppCompat.Light.NoActionBar"
+      Prevent the application from using the native ActionBar class to provide the app bar.
+    -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!-- Ensure the back button on a child activity is the correct color on the tool bar -->
+    <!-- Thanks to the following link for guidance
+
+         https://stackoverflow.com/questions/28620883/how-to-change-toolbar-home-icon-color
+    -->
+    <style name="ToolbarActionBarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@android:color/white</item>
     </style>
 
 </resources>
