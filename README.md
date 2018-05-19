@@ -8,11 +8,11 @@ playing.
 ## API Key
 
 This project makes use of The Movie Database (TMDb) to retrieve movie information.
-Per the terms of the TMDb, this API key must not be must be protected. This project
- does not include an API key. The user of this project shall use their own API key
+Per the terms of the TMDb, this API key must be protected. This project
+ does not include an API key. A user of this project shall use their own API key
  as provided by TMDb for this project.
 
-The user must complete the following step to get a successful build.
+The user must complete the following steps in order to get a successful build.
 
 1. Create a new class called "PopularMoviesConstants" within the the directory, 
 "app/src/main/java/com.example.android.popularmovies/utils".
