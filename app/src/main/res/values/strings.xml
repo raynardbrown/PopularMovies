@@ -1,3 +1,62 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="movie_poster_detail_name">Movie Detail</string>
+
+    <!-- sort by menu strings -->
+    <string name="sort_by_icon_name">Sort by</string>
+    <string name="sort_by_menu_most_popular">Most popular</string>
+    <string name="sort_by_menu_top_rated">Top rated</string>
+
+    <!-- movie detail label strings -->
+    <string name="release_date_label">Release date:</string>
+    <string name="user_rating_label">User rating:</string>
+
+    <!-- content description -->
+    <string name="movie_poster_content_description">A graphic that is used to advertise a movie.</string>
+
+    <!-- keys for intent put extra -->
+    <string translatable="false" name="movie_detail_poster_path_key">movie_detail_poster_path_key</string>
+    <string translatable="false" name="movie_detail_plot_synopsis_key">movie_detail_plot_synopsis_key</string>
+    <string translatable="false" name="movie_detail_release_date_key">movie_detail_release_date_key</string>
+    <string translatable="false" name="movie_detail_original_title_key">movie_detail_original_title_key</string>
+    <string translatable="false" name="movie_detail_user_rating_key">movie_detail_user_rating_key</string>
+
+    <!-- keys for bundle data -->
+    <string translatable="false" name="movie_sort_by_key">movie_sort_by_key</string>
+    <string translatable="false" name="movie_visible_position_key">movie_visible_position_key</string>
+
+    <!-- the movie database api strings -->
+    <string translatable="false" name="tmdb_api_key_url_parameter">api_key</string>
+    <string translatable="false" name="tmdb_page_url_parameter">page</string>
+    <string translatable="false" name="tmdb_movies_api_base_url">https://api.themoviedb.org/3/movie</string>
+    <string translatable="false" name="tmdb_movies_api_get_popular_path">popular</string>
+    <string translatable="false" name="tmdb_movies_api_get_top_rated_path">top_rated</string>
+
+    <!--
+         We are hardcoding the url for now. In the future, use TMDb configuration API to acquire
+         these strings.
+
+         See https://developers.themoviedb.org/3/getting-started/images
+    -->
+    <string translatable="false" name="tmdb_configuration_base_url">https://image.tmdb.org/t/p</string>
+    <string translatable="false" name="tmdb_configuration_image_size">w185</string>
+
+    <string translatable="false" name="tmdb_json_movie_results_object_results_array">results</string>
+    <string translatable="false" name="tmdb_json_movie_results_object_poster_path_string">poster_path</string>
+    <string translatable="false" name="tmdb_json_movie_results_object_overview_string">overview</string>
+    <string translatable="false" name="tmdb_json_movie_results_object_release_date_string">release_date</string>
+    <string translatable="false" name="tmdb_json_movie_results_object_original_title_string">original_title</string>
+    <string translatable="false" name="tmdb_json_movie_results_object_vote_average_floating_point">vote_average</string>
+
+    <string name="no_network_connection_warning">There is no network connection</string>
+
+    <!-- sample movie strings -->
+    <string name="sample_movie_title_string">Star Wars: Yet Another Cash Grab</string>
+    <string name="sample_movie_release_date_string">1977&#8211;05&#8211;25</string>
+    <string name="sample_movie_rating_string">4.23</string>
+    <string name="sample_movie_synopsis_string">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Curabitur ut quam id felis commodo aliquet vel eu enim. Integer vestibulum mattis justo, ut
+        lacinia urna sagittis et. Nullam tincidunt, massa a commodo gravida, ante ipsum dignissim purus,
+        eget pellentesque justo diam ut elit. Curabitur sed augue nec nulla bibendum consequat.</string>
+
 </resources>
