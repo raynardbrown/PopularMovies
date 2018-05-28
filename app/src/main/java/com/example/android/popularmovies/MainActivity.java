@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
       {
         if(intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false))
         {
-          // We have not connectivity
+          // We have no connectivity
           if(MainActivity.this.movieListResultObjectList.isEmpty())
           {
             hideGridViewAndShowNetworkErrorMessage();
