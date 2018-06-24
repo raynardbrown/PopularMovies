@@ -31,6 +31,13 @@
                 android:value=".MainActivity"/>
         </activity>
 
+        <!-- Movie Favorite Content Provider
+             exported=false <- so only this application can use the content provider -->
+        <provider
+            android:authorities="com.example.android.popularmovies"
+            android:name="com.example.android.popularmovies.provider.MovieFavoriteContentProvider"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
