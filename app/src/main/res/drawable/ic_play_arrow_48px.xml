@@ -1,0 +1,9 @@
+<!--
+     Source:
+     https://github.com/google/material-design-icons/blob/master/av/svg/production/ic_play_arrow_48px.svg
+-->
+<vector android:autoMirrored="true" android:height="48dp"
+    android:viewportHeight="48.0" android:viewportWidth="48.0"
+    android:width="48dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#FF000000" android:pathData="M16,10v28l22,-14z"/>
+</vector>
