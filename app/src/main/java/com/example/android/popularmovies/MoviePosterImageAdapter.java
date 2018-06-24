@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import com.example.android.popularmovies.db.MovieFavoriteContract;
 import com.example.android.popularmovies.model.MovieListResultObject;
 import com.example.android.popularmovies.tasks.IAsyncTaskCompleteListener;
-import com.example.android.popularmovies.tasks.MovieFavoriteDbDeleteAsyncTask;
 import com.example.android.popularmovies.tasks.MovieFavoriteDbQueryAsyncTask;
 import com.example.android.popularmovies.utils.TheMovieDatabaseUtils;
 import com.squareup.picasso.Picasso;
