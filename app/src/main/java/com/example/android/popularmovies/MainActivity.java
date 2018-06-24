@@ -4,12 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
-import android.net.Uri;
-import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,19 +19,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.example.android.popularmovies.databinding.ActivityMainBinding;
+import com.example.android.popularmovies.db.MovieFavoriteContract;
 import com.example.android.popularmovies.model.MovieListResultObject;
 import com.example.android.popularmovies.model.PopularMoviesSettings;
-import com.example.android.popularmovies.utils.PopularMoviesConstants;
-import com.example.android.popularmovies.utils.TheMovieDatabaseUtils;
+import com.example.android.popularmovies.tasks.IAsyncTaskCompleteListener;
+import com.example.android.popularmovies.tasks.MovieFavoriteDbDeleteAsyncTask;
+import com.example.android.popularmovies.tasks.MovieFavoriteDbQueryAsyncTask;
+import com.example.android.popularmovies.tasks.MovieListResultAsyncTask;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 /**
  * MainActivity is the main Activity within the Popular Movies application. This Activity presents
@@ -49,10 +52,13 @@ import okhttp3.ResponseBody;
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener,
                                                                GridView.OnItemClickListener
 {
+  private static final String TAG = MainActivity.class.getSimpleName();
+
   /**
    * A collection of movie results from a query of the TMDb.
    */
   private List<MovieListResultObject> movieListResultObjectList;
+
   private MoviePosterImageAdapter adapter;
 
   private PopularMoviesSettings popularMovieSettings;
@@ -81,10 +87,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
    */
   private int firstVisiblePosition;
 
+  SharedPreferences sharedPreferences;
+
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    Log.i(MainActivity.TAG, "onCreate");
 
     dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
@@ -99,26 +108,41 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     if(savedInstanceState != null)
     {
+      Log.i(MainActivity.TAG, "onCreate - bundle not null");
       popularMovieSettings = new PopularMoviesSettings(savedInstanceState.getInt(getString(R.string.movie_sort_by_key)));
 
       firstVisiblePosition = savedInstanceState.getInt(getString(R.string.movie_visible_position_key));
     }
     else
     {
+      Log.i(MainActivity.TAG, "onCreate - bundle null");
       // Default sort value
       popularMovieSettings = new PopularMoviesSettings(PopularMoviesSettings.MOST_POPULAR);
 
       firstVisiblePosition = 0;
     }
 
-    IntentFilter networkIntentFilter = new IntentFilter();
-    networkIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-
-    networkBroadcastReceiver = new NetworkBroadcastReceiver();
-
-    registerReceiver(networkBroadcastReceiver, networkIntentFilter);
+    // We are using cached data in the favorites state, no need to start up a network broadcast
+    // receiver.
+    if(popularMovieSettings.getSortSetting() != PopularMoviesSettings.FAVORITES)
+    {
+      launchBroadCastReceiverIfNotRegistered();
+    }
 
     dispatchMovieListResultRequest();
+  }
+
+  private void launchBroadCastReceiverIfNotRegistered()
+  {
+    if(networkBroadcastReceiver == null)
+    {
+      IntentFilter networkIntentFilter = new IntentFilter();
+      networkIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+      networkBroadcastReceiver = new NetworkBroadcastReceiver();
+
+      registerReceiver(networkBroadcastReceiver, networkIntentFilter);
+    }
   }
 
   private void initializePageState()
@@ -129,9 +153,16 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void dispatchMovieListResultRequest()
   {
-    if(currentRemotePage == 0 || currentRemotePage < totalRemotePages)
+    if(!(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES)&&
+            (currentRemotePage == 0 || currentRemotePage < totalRemotePages))
     {
-      new MovieListResultAsyncTask(this).execute(popularMovieSettings);
+      new MovieListResultAsyncTask(this, new MovieListResultAsyncTaskCompleteListener()).execute(popularMovieSettings);
+    }
+    else
+    {
+      // We are in the favorites state, dispatch the appropriate database requests
+      MovieFavoriteDbQueryAsyncTask.Param param = new MovieFavoriteDbQueryAsyncTask.Param(null, null);
+      new MovieFavoriteDbQueryAsyncTask(this, new MovieFavoriteDbQueryAsyncTaskCompleteListener()).execute(param);
     }
   }
 
@@ -163,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
       case R.id.action_sort_by_menuitem:
       {
         // Data binding is not available for menus, so use good old findViewById
-        // This shows the under the sort button on the action bar.
+        // This shows the popup menu under the sort button on the action bar.
         View view = findViewById(R.id.action_sort_by_menuitem);
         showPopupMenu(view);
         return true;
@@ -178,6 +209,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void showPopupMenu(View v)
   {
+    if(v == null)
+    {
+      Log.i(MainActivity.TAG, "pop up menu \"view\" is null");
+    }
+
     PopupMenu popup = new PopupMenu(this, v);
 
     popup.setOnMenuItemClickListener(this);
@@ -207,6 +243,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         return true;
       }
 
+      case R.id.action_sort_by_favorites:
+      {
+        onMenuItemClickHelper(PopularMoviesSettings.FAVORITES);
+        return true;
+      }
+
       default:
       {
         return false;
@@ -225,6 +267,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
       initializeAdapter();
 
+      restoreDefaultViewState();
+
+      if(popularMovieSettings.getSortSetting() != PopularMoviesSettings.FAVORITES)
+      {
+        launchBroadCastReceiverIfNotRegistered();
+      }
+
       // fire off a new async task
       dispatchMovieListResultRequest();
     }
@@ -241,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     intent.putExtra(getString(R.string.movie_detail_release_date_key), this.movieListResultObjectList.get(position).getReleaseDate());
     intent.putExtra(getString(R.string.movie_detail_original_title_key), this.movieListResultObjectList.get(position).getOriginalTitle());
     intent.putExtra(getString(R.string.movie_detail_user_rating_key), this.movieListResultObjectList.get(position).getUserRating());
+    intent.putExtra(getString(R.string.movie_detail_id_key), this.movieListResultObjectList.get(position).getId());
 
     startActivity(intent);
   }
@@ -249,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
   protected void onSaveInstanceState(Bundle outState)
   {
     super.onSaveInstanceState(outState);
+    Log.i(MainActivity.TAG, "onSaveInstanceState");
 
     // save the sort setting
     outState.putInt(getString(R.string.movie_sort_by_key), popularMovieSettings.getSortSetting());
@@ -257,6 +308,47 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     // save the visible position
     outState.putInt(getString(R.string.movie_visible_position_key), firstVisiblePosition);
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState)
+  {
+    super.onRestoreInstanceState(savedInstanceState);
+
+    Log.i(MainActivity.TAG, "onRestoreInstanceState");
+
+    popularMovieSettings = new PopularMoviesSettings(savedInstanceState.getInt(getString(R.string.movie_sort_by_key)));
+
+    firstVisiblePosition = savedInstanceState.getInt(getString(R.string.movie_visible_position_key));
+  }
+
+  /**
+   * Handle main activity activation. Normally we would handle this via onRestoreInstanceState,
+   * however we are using singleTop so onRestoreInstanceState will not be called. We only need to
+   * handle movies being removed from the favorites database here.
+   */
+  @Override
+  protected void onResume()
+  {
+    super.onResume();
+    Log.i(MainActivity.TAG, "onResume");
+
+    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+    boolean favoritesChanged = sharedPreferences.getBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
+
+    if(favoritesChanged)
+    {
+      Log.i(MainActivity.TAG, "User changed a favorite in the detail activity");
+
+      if(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES)
+      {
+        // Kick off a query since we are in the favorites state
+        initializeAdapter();
+
+        dispatchMovieListResultRequest();
+      }
+    }
   }
 
   @Override
@@ -272,112 +364,111 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void hideGridViewAndShowNetworkErrorMessage()
   {
-    dataBinding.gvMoviePosters.setVisibility(View.INVISIBLE);
-    dataBinding.tvNoNetworkConnection.setVisibility(View.VISIBLE);
+    if(popularMovieSettings.getSortSetting() != PopularMoviesSettings.FAVORITES)
+    {
+      dataBinding.gvMoviePosters.setVisibility(View.INVISIBLE);
+      dataBinding.tvNoNetworkConnection.setVisibility(View.VISIBLE);
+    }
   }
 
   private void showGridViewAndHideNetworkErrorMessage()
   {
-    dataBinding.tvNoNetworkConnection.setVisibility(View.INVISIBLE);
-    dataBinding.gvMoviePosters.setVisibility(View.VISIBLE);
+    if(popularMovieSettings.getSortSetting() != PopularMoviesSettings.FAVORITES)
+    {
+      dataBinding.tvNoNetworkConnection.setVisibility(View.INVISIBLE);
+      dataBinding.gvMoviePosters.setVisibility(View.VISIBLE);
+    }
   }
 
-  /**
-   * MovieListResultAsyncTask is an AsyncTask that is used for retrieving a "page" of results from
-   * the movie database.
-   */
-  public class MovieListResultAsyncTask extends AsyncTask<PopularMoviesSettings, Void, MainActivity.MovieListResultAsyncTask.Results>
+  private void hideGridViewAndShowFavoriteDatabaseErrorMessage()
   {
-    private final Context context;
+    dataBinding.gvMoviePosters.setVisibility(View.INVISIBLE);
+    dataBinding.tvNoFavoritesInDatabase.setVisibility(View.VISIBLE);
+  }
 
-    class Results
-    {
-      /**
-       * The page we retrieved.
-       */
-      private int page;
+  private void restoreDefaultViewState()
+  {
+    dataBinding.gvMoviePosters.setVisibility(View.VISIBLE);
+    dataBinding.tvNoNetworkConnection.setVisibility(View.INVISIBLE);
+    dataBinding.tvNoFavoritesInDatabase.setVisibility(View.INVISIBLE);
+  }
 
-      private List<MovieListResultObject> movieListResultObjectList;
-
-      Results(int page, List<MovieListResultObject> movieListResultObjectList)
-      {
-        this.page = page;
-        this.movieListResultObjectList = movieListResultObjectList;
-      }
-    }
-
-    MovieListResultAsyncTask(Context context)
-    {
-      this.context = context;
-    }
-
+  public class MovieListResultAsyncTaskCompleteListener implements IAsyncTaskCompleteListener<MovieListResultAsyncTask.Results>
+  {
     @Override
-    protected MainActivity.MovieListResultAsyncTask.Results doInBackground(PopularMoviesSettings... popularMoviesSettings)
+    public void onTaskComplete(MovieListResultAsyncTask.Results result)
     {
-      Uri uri = null;
-      String theMovieDatabaseApiKey = PopularMoviesConstants.getTheMovieDatabaseApiKey();
-      int page = 1; // TODO: Only get the first page of results for now.
-
-      if(popularMoviesSettings[0].getSortSetting() == PopularMoviesSettings.MOST_POPULAR)
+      if (result != null)
       {
-        uri = TheMovieDatabaseUtils.getPopularMoviesUri(context, theMovieDatabaseApiKey, page);
-      }
-      else
-      {
-        uri = TheMovieDatabaseUtils.getTopRatedMoviesUri(context, theMovieDatabaseApiKey, page);
-      }
-
-      List<MovieListResultObject> movieListResultObjectList = null;
-
-      try
-      {
-        Response response = TheMovieDatabaseUtils.queryTheMovieDatabase(uri);
-
-        if(response.code() == 200) // the movie database returns this code on success
+        if (result.movieListResultObjectList != null)
         {
-          ResponseBody responseBody = response.body();
-          if(responseBody != null)
-          {
-            String responseBodyToString = responseBody.string();
+          // We have valid results
 
-            movieListResultObjectList = TheMovieDatabaseUtils.movieJsonStringToMovieResultList(context, responseBodyToString);
+          // Make sure we are not adding an existing page (for example two async tasks fired)
+          // If we are throw the results away since we already have the page
+          if (MainActivity.this.currentRemotePage != result.page)
+          {
+            MainActivity.this.movieListResultObjectList.addAll(result.movieListResultObjectList);
+
+            MainActivity.this.adapter.notifyDataSetChanged();
+
+            // update the current page
+            MainActivity.this.currentRemotePage++;
+
+            // scroll to the position in the grid before a configuration change occurred.
+            MainActivity.this.dataBinding.gvMoviePosters.smoothScrollToPosition(MainActivity.this.firstVisiblePosition);
           }
         }
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace();
-      }
-
-      return new Results(page, movieListResultObjectList);
-    }
-
-    @Override
-    protected void onPostExecute(Results results)
-    {
-      if(results.movieListResultObjectList != null)
-      {
-        // We have valid results
-
-        // Make sure we are not adding an existing page (for example two async tasks fired)
-        // If we are throw the results away since we already have the page
-        if(MainActivity.this.currentRemotePage != results.page)
+        else if (MainActivity.this.movieListResultObjectList.isEmpty())
         {
-          MainActivity.this.movieListResultObjectList.addAll(results.movieListResultObjectList);
-
-          MainActivity.this.adapter.notifyDataSetChanged();
-
-          // update the current page
-          MainActivity.this.currentRemotePage++;
-
-          // scroll to the position in the grid before a configuration change occurred.
-          MainActivity.this.dataBinding.gvMoviePosters.smoothScrollToPosition(MainActivity.this.firstVisiblePosition);
+          // We didn't get anything from the remote server and we currently have no posters displayed
+          MainActivity.this.hideGridViewAndShowNetworkErrorMessage();
         }
       }
-      else if(MainActivity.this.movieListResultObjectList.isEmpty())
+    }
+  }
+
+  class MovieFavoriteDbQueryAsyncTaskCompleteListener implements IAsyncTaskCompleteListener<MovieFavoriteDbQueryAsyncTask.Result>
+  {
+    @Override
+    public void onTaskComplete(MovieFavoriteDbQueryAsyncTask.Result result)
+    {
+      if(result != null)
       {
-        // We didn't get anything from the remote server and we currently have no posters displayed
-        MainActivity.this.hideGridViewAndShowNetworkErrorMessage();
+        Cursor cursor = result.cursor;
+
+        if(cursor != null)
+        {
+          for (; cursor.moveToNext(); )
+          {
+            int movieId = cursor.getInt(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
+            String movieTitle = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_TITLE));
+            String moviePosterUrl = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_URL));
+            String moviePlot = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_PLOT_SYNOPSIS));
+            String movieReleaseDate = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_RELEASE_DATE));
+            String movieUserRating = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_USER_RATING));
+
+            MainActivity.this.movieListResultObjectList.add(new MovieListResultObject(moviePosterUrl, moviePlot, movieReleaseDate, movieTitle, movieUserRating, movieId));
+          }
+
+          if(MainActivity.this.movieListResultObjectList.size() > 0)
+          {
+            MainActivity.this.adapter.notifyDataSetChanged();
+          }
+          else
+          {
+            // The cursor is empty, display a message to the user
+            hideGridViewAndShowFavoriteDatabaseErrorMessage();
+          }
+
+          // finished with the cursor so close it.
+          cursor.close();
+
+          // Also reset the shared preferences
+          SharedPreferences.Editor editor = sharedPreferences.edit();
+          editor.putBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
+          editor.apply();
+        }
       }
     }
   }
@@ -408,8 +499,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           // We have connectivity
           showGridViewAndHideNetworkErrorMessage();
 
-          // We also need to launch the async task if the movieListResultObjectList are empty
-          // since we do not have any results
+          // We also need to launch the async task if the movieListResultObjectList is empty
+          // since we do not have any results.
           if(MainActivity.this.movieListResultObjectList.isEmpty())
           {
             dispatchMovieListResultRequest();
