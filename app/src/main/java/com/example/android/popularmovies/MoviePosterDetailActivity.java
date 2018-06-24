@@ -13,7 +13,6 @@ import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -54,8 +53,6 @@ import java.util.List;
  */
 public class MoviePosterDetailActivity extends AppCompatActivity implements IMovieTrailerListItemClickListener
 {
-  private static final String TAG = MoviePosterDetailActivity.class.getSimpleName();
-
   private ActivityMoviePosterDetailBinding dataBinding;
 
   private MovieTrailerAdapter movieTrailerAdapter;
@@ -176,7 +173,6 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
     {
       case R.id.action_share_menuitem:
       {
-        Toast.makeText(this, "Share button clicked", Toast.LENGTH_LONG).show();
         onShareButtonClick();
 
         return true;
@@ -191,7 +187,6 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
 
   private void onShareButtonClick()
   {
-    Log.i(MoviePosterDetailActivity.TAG, "clicked the share button");
     String mimeType = "text/plain";
     String title = this.movieVideoResultObjectList.get(0).getVideoClipName();
 
@@ -207,16 +202,9 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
             .setText(shareText)
             .createChooserIntent();
 
-    Log.i(MoviePosterDetailActivity.TAG, "built the intent for: " + shareText);
-
     if(shareIntent.resolveActivity(getPackageManager()) != null)
     {
-      Log.i(MoviePosterDetailActivity.TAG, "about to start the share intent");
       startActivity(shareIntent);
-    }
-    else
-    {
-      Log.i(MoviePosterDetailActivity.TAG, "could not start the share intent");
     }
   }
 
@@ -314,7 +302,7 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
       }
       else
       {
-        // Button clicked while in the unfavorite state, remove this movie from the favorite database
+        // Button clicked while in the undo favorite state, remove this movie from the favorite database
         MovieFavoriteDbDeleteAsyncTask.Param param = new MovieFavoriteDbDeleteAsyncTask.Param(MoviePosterDetailActivity.this.movieListResultObject.getId());
         new MovieFavoriteDbDeleteAsyncTask(MoviePosterDetailActivity.this, new MovieFavoriteDbDeleteAsyncTaskCompleteListener()).execute(param);
       }
@@ -362,21 +350,15 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
     {
       if(result != null)
       {
-        //Log.i(MoviePosterDetailActivity.TAG, "the result is valid");
         if(result.movieVideoResultObjectList != null && result.movieVideoResultObjectList.size() > 0)
         {
-          //Log.i(MoviePosterDetailActivity.TAG, "the list is valid");
           // We have valid results
           MoviePosterDetailActivity.this.movieVideoResultObjectList.addAll(result.movieVideoResultObjectList);
-
-          //Log.i(MoviePosterDetailActivity.TAG, "updated the main list. size is now: " + MoviePosterDetailActivity.this.movieVideoResultObjectList.size());
 
           // Enable the share button flag
           enableShareButton = true;
 
           MoviePosterDetailActivity.this.movieTrailerAdapter.notifyDataSetChanged();
-
-          //Log.i(MoviePosterDetailActivity.TAG, "Updated the trailer adapter");
         }
         else
         {
@@ -396,19 +378,12 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
     {
       if(result != null)
       {
-        Log.i(MoviePosterDetailActivity.TAG, "the result is valid");
         if(result.movieReviewResultObjectList != null && result.movieReviewResultObjectList.size() > 0)
         {
-          Log.i(MoviePosterDetailActivity.TAG, "the list is valid");
-
           // We have valid results
           MoviePosterDetailActivity.this.movieReviewResultObjectList.addAll(result.movieReviewResultObjectList);
 
-          Log.i(MoviePosterDetailActivity.TAG, "updated the main list. size is now: " + MoviePosterDetailActivity.this.movieReviewResultObjectList.size());
-
           MoviePosterDetailActivity.this.movieReviewAdapter.notifyDataSetChanged();
-
-          Log.i(MoviePosterDetailActivity.TAG, "Updated the review adapter");
         }
         else
         {
