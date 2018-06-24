@@ -55,7 +55,7 @@
 
         <!--
              This text view is hidden by default unless there is no network connectivity, in which
-             case it shown and the grid view is hidden until network connectivity is restored.
+             case it is shown and the grid view is hidden until network connectivity is restored.
         -->
         <TextView
             android:id="@+id/tv_no_network_connection"
@@ -72,6 +72,28 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tb_popular_movies"/>
+
+        <!--
+             This text view is hidden by default unless we query the favorites database and find
+             that it is empty. If the database is empty, we hide the grid view and show this text
+             view.
+        -->
+        <TextView
+            android:id="@+id/tv_no_favorites_in_database"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/no_favorites_in_database"
+            android:textSize="24sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_popular_movies"
+            />
 
     </android.support.constraint.ConstraintLayout>
 </layout>
