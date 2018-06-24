@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,14 +18,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.databinding.ActivityMainBinding;
 import com.example.android.popularmovies.db.MovieFavoriteContract;
 import com.example.android.popularmovies.model.MovieListResultObject;
 import com.example.android.popularmovies.model.PopularMoviesSettings;
 import com.example.android.popularmovies.tasks.IAsyncTaskCompleteListener;
-import com.example.android.popularmovies.tasks.MovieFavoriteDbDeleteAsyncTask;
 import com.example.android.popularmovies.tasks.MovieFavoriteDbQueryAsyncTask;
 import com.example.android.popularmovies.tasks.MovieListResultAsyncTask;
 
@@ -52,8 +49,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener,
                                                                GridView.OnItemClickListener
 {
-  private static final String TAG = MainActivity.class.getSimpleName();
-
   /**
    * A collection of movie results from a query of the TMDb.
    */
@@ -87,13 +82,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
    */
   private int firstVisiblePosition;
 
-  SharedPreferences sharedPreferences;
+  private SharedPreferences sharedPreferences;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Log.i(MainActivity.TAG, "onCreate");
 
     dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
@@ -108,14 +102,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     if(savedInstanceState != null)
     {
-      Log.i(MainActivity.TAG, "onCreate - bundle not null");
       popularMovieSettings = new PopularMoviesSettings(savedInstanceState.getInt(getString(R.string.movie_sort_by_key)));
 
       firstVisiblePosition = savedInstanceState.getInt(getString(R.string.movie_visible_position_key));
     }
     else
     {
-      Log.i(MainActivity.TAG, "onCreate - bundle null");
       // Default sort value
       popularMovieSettings = new PopularMoviesSettings(PopularMoviesSettings.MOST_POPULAR);
 
@@ -209,11 +201,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void showPopupMenu(View v)
   {
-    if(v == null)
-    {
-      Log.i(MainActivity.TAG, "pop up menu \"view\" is null");
-    }
-
     PopupMenu popup = new PopupMenu(this, v);
 
     popup.setOnMenuItemClickListener(this);
@@ -299,7 +286,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
   protected void onSaveInstanceState(Bundle outState)
   {
     super.onSaveInstanceState(outState);
-    Log.i(MainActivity.TAG, "onSaveInstanceState");
 
     // save the sort setting
     outState.putInt(getString(R.string.movie_sort_by_key), popularMovieSettings.getSortSetting());
@@ -315,8 +301,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
   {
     super.onRestoreInstanceState(savedInstanceState);
 
-    Log.i(MainActivity.TAG, "onRestoreInstanceState");
-
     popularMovieSettings = new PopularMoviesSettings(savedInstanceState.getInt(getString(R.string.movie_sort_by_key)));
 
     firstVisiblePosition = savedInstanceState.getInt(getString(R.string.movie_visible_position_key));
@@ -331,7 +315,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
   protected void onResume()
   {
     super.onResume();
-    Log.i(MainActivity.TAG, "onResume");
 
     sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -339,8 +322,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     if(favoritesChanged)
     {
-      Log.i(MainActivity.TAG, "User changed a favorite in the detail activity");
-
       if(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES)
       {
         // Kick off a query since we are in the favorites state
