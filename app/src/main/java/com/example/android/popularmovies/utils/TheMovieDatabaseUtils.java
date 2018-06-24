@@ -5,6 +5,8 @@ import android.net.Uri;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.MovieListResultObject;
+import com.example.android.popularmovies.model.MovieReviewResultObject;
+import com.example.android.popularmovies.model.MovieVideoResultObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,11 +32,34 @@ public class TheMovieDatabaseUtils
     return getMoviesUriHelper(context, apiKey, page, context.getString(R.string.tmdb_movies_api_get_top_rated_path));
   }
 
+  public static Uri getVideosMoviesUri(Context context, String apiKey, int page, int id)
+  {
+    return getMoviesUriWithIdHelper(context, apiKey, page, id, context.getString(R.string.tmdb_movies_api_get_videos_path));
+  }
+
+  public static Uri getReviewsMoviesUri(Context context, String apiKey, int page, int id)
+  {
+    return getMoviesUriWithIdHelper(context, apiKey, page, id, context.getString(R.string.tmdb_movies_api_get_reviews_path));
+  }
+
   private static Uri getMoviesUriHelper(Context context, String apiKey, int page, String path)
   {
     String pageToString = Integer.toString(page);
 
     return Uri.parse(context.getString(R.string.tmdb_movies_api_base_url)).buildUpon()
+            .appendPath(path)
+            .appendQueryParameter(context.getString(R.string.tmdb_api_key_url_parameter), apiKey)
+            .appendQueryParameter(context.getString(R.string.tmdb_page_url_parameter), pageToString)
+            .build();
+  }
+
+  private static Uri getMoviesUriWithIdHelper(Context context, String apiKey, int page, int id, String path)
+  {
+    String idToString = Integer.toString(id);
+    String pageToString = Integer.toString(page);
+
+    return Uri.parse(context.getString(R.string.tmdb_movies_api_base_url)).buildUpon()
+            .appendPath(idToString)
             .appendPath(path)
             .appendQueryParameter(context.getString(R.string.tmdb_api_key_url_parameter), apiKey)
             .appendQueryParameter(context.getString(R.string.tmdb_page_url_parameter), pageToString)
@@ -85,10 +110,72 @@ public class TheMovieDatabaseUtils
 
         String userRating = resultsObject.getString(context.getString(R.string.tmdb_json_movie_results_object_vote_average_floating_point));
 
-        movieListResultObjectList.add(new MovieListResultObject(posterPath, plotSynopsis, releaseDate, originalTitle, userRating));
+        int id = resultsObject.getInt(context.getString(R.string.tmdb_json_movie_results_object_id_int));
+
+        movieListResultObjectList.add(new MovieListResultObject(posterPath, plotSynopsis, releaseDate, originalTitle, userRating, id));
       }
 
       return movieListResultObjectList;
+    }
+    catch(JSONException e)
+    {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public static List<MovieVideoResultObject> movieVideoJsonStringToMovieVideoResultList(Context context, String json, int id)
+  {
+    try
+    {
+      JSONObject rootJsonObject = new JSONObject(json);
+
+      JSONArray resultsArray = rootJsonObject.getJSONArray(context.getString(R.string.tmdb_json_movie_videos_results_array));
+
+      List<MovieVideoResultObject> movieVideoResultObjectList = new ArrayList<MovieVideoResultObject>();
+
+      for(int i = 0; i < resultsArray.length(); ++i)
+      {
+        JSONObject resultsObject = resultsArray.getJSONObject(i);
+
+        String videoClipName = resultsObject.getString(context.getString(R.string.tmdb_json_movie_videos_name_string));
+
+        String key = resultsObject.getString(context.getString(R.string.tmdb_json_movie_videos_key_string));
+
+        movieVideoResultObjectList.add(new MovieVideoResultObject(id, videoClipName, key));
+      }
+
+      return movieVideoResultObjectList;
+    }
+    catch(JSONException e)
+    {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public static List<MovieReviewResultObject> movieReviewJsonStringToMovieReviewResultList(Context context, String json, int id)
+  {
+    try
+    {
+      JSONObject rootJsonObject = new JSONObject(json);
+
+      JSONArray resultsArray = rootJsonObject.getJSONArray(context.getString(R.string.tmdb_json_movie_reviews_results_array));
+
+      List<MovieReviewResultObject> movieReviewResultObjectList = new ArrayList<MovieReviewResultObject>();
+
+      for(int i = 0; i < resultsArray.length(); ++i)
+      {
+        JSONObject resultsObject = resultsArray.getJSONObject(i);
+
+        String author = resultsObject.getString(context.getString(R.string.tmdb_json_movie_reviews_author_string));
+
+        String content = resultsObject.getString(context.getString(R.string.tmdb_json_movie_reviews_content_string));
+
+        movieReviewResultObjectList.add(new MovieReviewResultObject(id, author, content));
+      }
+
+      return movieReviewResultObjectList;
     }
     catch(JSONException e)
     {
