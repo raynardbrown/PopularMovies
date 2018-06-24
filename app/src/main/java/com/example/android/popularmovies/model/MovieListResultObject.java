@@ -11,6 +11,7 @@ public class MovieListResultObject
   private String releaseDate;
   private String originalTitle;
   private String userRating;
+  private int id;
 
   public MovieListResultObject()
   {
@@ -21,13 +22,15 @@ public class MovieListResultObject
                                String plotSynopsis,
                                String releaseDate,
                                String originalTitle,
-                               String userRating)
+                               String userRating,
+                               int id)
   {
     this.posterPath = posterPath;
     this.plotSynopsis = plotSynopsis;
     this.releaseDate = releaseDate;
     this.originalTitle = originalTitle;
     this.userRating = userRating;
+    this.id = id;
   }
 
   public String getPosterPath()
@@ -53,5 +56,15 @@ public class MovieListResultObject
   public String getUserRating()
   {
     return userRating;
+  }
+
+  public int getId()
+  {
+    return id;
+  }
+
+  public void setId(int id)
+  {
+    this.id = id;
   }
 }
