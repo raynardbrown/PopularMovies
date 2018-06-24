@@ -4,15 +4,22 @@
 
     <!-- sort by menu strings -->
     <string name="sort_by_icon_name">Sort by</string>
+    <string name="share_icon_name">Share</string>
     <string name="sort_by_menu_most_popular">Most popular</string>
     <string name="sort_by_menu_top_rated">Top rated</string>
+    <string name="sort_by_menu_favorites">Favorites</string>
 
     <!-- movie detail label strings -->
     <string name="release_date_label">Release date:</string>
     <string name="user_rating_label">User rating:</string>
+    <string name="favorite_button_favorite_label">Favorite</string>
+    <string name="favorite_button_undo_favorite_label">Undo Favorite</string>
+    <string name="movie_detail_trailer_label">Trailers:</string>
+    <string name="movie_detail_review_label">Reviews:</string>
 
     <!-- content description -->
     <string name="movie_poster_content_description">A graphic that is used to advertise a movie.</string>
+    <string name="trailer_play_icon__content_description">A play icon</string>
 
     <!-- keys for intent put extra -->
     <string translatable="false" name="movie_detail_poster_path_key">movie_detail_poster_path_key</string>
@@ -20,10 +27,14 @@
     <string translatable="false" name="movie_detail_release_date_key">movie_detail_release_date_key</string>
     <string translatable="false" name="movie_detail_original_title_key">movie_detail_original_title_key</string>
     <string translatable="false" name="movie_detail_user_rating_key">movie_detail_user_rating_key</string>
+    <string translatable="false" name="movie_detail_id_key">movie_detail_id_key</string>
 
     <!-- keys for bundle data -->
     <string translatable="false" name="movie_sort_by_key">movie_sort_by_key</string>
     <string translatable="false" name="movie_visible_position_key">movie_visible_position_key</string>
+
+    <!-- keys for shared preferences -->
+    <string name="shared_preferences_favorites_changed_key">favorites_changed</string>
 
     <!-- the movie database api strings -->
     <string translatable="false" name="tmdb_api_key_url_parameter">api_key</string>
@@ -31,6 +42,8 @@
     <string translatable="false" name="tmdb_movies_api_base_url">https://api.themoviedb.org/3/movie</string>
     <string translatable="false" name="tmdb_movies_api_get_popular_path">popular</string>
     <string translatable="false" name="tmdb_movies_api_get_top_rated_path">top_rated</string>
+    <string translatable="false" name="tmdb_movies_api_get_videos_path">videos</string>
+    <string translatable="false" name="tmdb_movies_api_get_reviews_path">reviews</string>
 
     <!--
          We are hardcoding the url for now. In the future, use TMDb configuration API to acquire
@@ -47,8 +60,27 @@
     <string translatable="false" name="tmdb_json_movie_results_object_release_date_string">release_date</string>
     <string translatable="false" name="tmdb_json_movie_results_object_original_title_string">original_title</string>
     <string translatable="false" name="tmdb_json_movie_results_object_vote_average_floating_point">vote_average</string>
+    <string translatable="false" name="tmdb_json_movie_results_object_id_int">id</string>
 
+    <string translatable="false" name="tmdb_json_movie_videos_results_array">results</string>
+    <string translatable="false" name="tmdb_json_movie_videos_id_int">id</string>
+    <string translatable="false" name="tmdb_json_movie_videos_key_string">key</string>
+    <string translatable="false" name="tmdb_json_movie_videos_name_string">name</string>
+
+    <string translatable="false" name="tmdb_json_movie_reviews_results_array">results</string>
+    <string translatable="false" name="tmdb_json_movie_reviews_id_int">id</string>
+    <string translatable="false" name="tmdb_json_movie_reviews_author_string">author</string>
+    <string translatable="false" name="tmdb_json_movie_reviews_content_string">content</string>
+
+    <!-- trailer strings -->
+    <string name="youtube_app_base_url_string">vnd.youtube.com:</string>
+    <string name="youtube_website_base_url_string">https://www.youtube.com/watch</string>
+
+    <!-- Error strings -->
     <string name="no_network_connection_warning">There is no network connection</string>
+    <string name="no_favorites_in_database">There are no favorites</string>
+    <string name="no_trailers_available_string">No trailers available</string>
+    <string name="no_reviews_available_string">No reviews available</string>
 
     <!-- sample movie strings -->
     <string name="sample_movie_title_string">Star Wars: Yet Another Cash Grab</string>
@@ -58,5 +90,9 @@
         Curabitur ut quam id felis commodo aliquet vel eu enim. Integer vestibulum mattis justo, ut
         lacinia urna sagittis et. Nullam tincidunt, massa a commodo gravida, ante ipsum dignissim purus,
         eget pellentesque justo diam ut elit. Curabitur sed augue nec nulla bibendum consequat.</string>
+    <string name="sample_movie_trailer_title_string">This is the longest movie trailer name you
+        will ever see: Really nothing is longer than this</string>
+    <string name="sample_movie_review_author_string">Author:</string>
+    <string name="sample_favorite_button_label_string">Favorite</string>
 
 </resources>
