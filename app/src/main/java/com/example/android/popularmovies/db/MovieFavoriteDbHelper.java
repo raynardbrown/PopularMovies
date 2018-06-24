@@ -3,12 +3,9 @@ package com.example.android.popularmovies.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class MovieFavoriteDbHelper extends SQLiteOpenHelper
 {
-  private static final String Tag = MovieFavoriteDbHelper.class.getSimpleName();
-
   private static final String DATABASE_NAME = "movie_favorite.db";
 
   private static final int DATABASE_VERSION = 1;
@@ -56,13 +53,9 @@ public class MovieFavoriteDbHelper extends SQLiteOpenHelper
   public void onCreate(SQLiteDatabase db)
   {
     // Create all of the tables
-    Log.i(MovieFavoriteDbHelper.Tag, "onCreate");
     db.execSQL(MovieFavoriteDbHelper.SQL_CREATE_MOVIE_FAVORITE_TABLE);
-    Log.i(MovieFavoriteDbHelper.Tag, "executed the create table statement\n" + MovieFavoriteDbHelper.SQL_CREATE_MOVIE_FAVORITE_TABLE);
     db.execSQL(MovieFavoriteDbHelper.SQL_CREATE_MOVIE_TRAILER_TABLE);
-    Log.i(MovieFavoriteDbHelper.Tag, "executed the create table statement\n" + MovieFavoriteDbHelper.SQL_CREATE_MOVIE_TRAILER_TABLE);
     db.execSQL(MovieFavoriteDbHelper.SQL_CREATE_MOVIE_REVIEW_TABLE);
-    Log.i(MovieFavoriteDbHelper.Tag, "executed the create table statement\n" + MovieFavoriteDbHelper.SQL_CREATE_MOVIE_REVIEW_TABLE);
   }
 
   @Override
