@@ -3,14 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
+    <!--
+         Prevent the recycler view from stealing focus. Without this flag, the Activity
+         "jumps" to the recycler view when opened.
+
+         android:focusableInTouchMode="true"
+     -->
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
         tools:context="com.example.android.popularmovies.MoviePosterDetailActivity">
 
         <android.support.v7.widget.Toolbar
@@ -19,99 +22,257 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ToolbarActionBarTheme"
-            app:titleTextColor="@android:color/white"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:titleTextColor="@android:color/white"/>
 
-        <TextView
-            android:id="@+id/tv_original_title"
+        <ScrollView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tb_movie_poster_detail"
-            tools:text="@string/sample_movie_title_string"/>
-
-        <ImageView
-            android:id="@+id/iv_movie_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="@+id/tv_original_title"
-            app:layout_constraintTop_toBottomOf="@+id/tv_original_title"
-            tools:src="@drawable/ic_sample_movie_poster"
-            android:contentDescription="@string/movie_poster_content_description"/>
-
-        <TextView
-            android:id="@+id/tv_release_date_label"
-            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/release_date_label"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/iv_movie_poster"
-            app:layout_constraintTop_toTopOf="@+id/iv_movie_poster"/>
-
-        <TextView
-            android:id="@+id/tv_release_date"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@+id/tv_release_date_label"
-            app:layout_constraintTop_toBottomOf="@+id/tv_release_date_label"
-            tools:text="@string/sample_movie_release_date_string"/>
-
-        <TextView
-            android:id="@+id/tv_user_rating_label"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/user_rating_label"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@+id/tv_release_date_label"
-            app:layout_constraintTop_toBottomOf="@+id/tv_release_date"/>
-
-        <TextView
-            android:id="@+id/tv_user_rating"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@+id/tv_user_rating_label"
-            app:layout_constraintTop_toBottomOf="@+id/tv_user_rating_label"
-            tools:text="@string/sample_movie_rating_string"/>
-
-        <!-- I'll probably make another layout for landscape mode and move this text view next
-             to the movie poster instead of underneath.
-        -->
-        <TextView
-            android:id="@+id/tv_movie_synopsis"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/sample_movie_synopsis_string"
-            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/iv_movie_poster"
-            app:layout_constraintTop_toBottomOf="@+id/iv_movie_poster"
-            app:layout_constraintVertical_bias="1.0"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_movie_poster_detail"
+            >
 
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/tv_original_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:textSize="32sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/sample_movie_title_string"/>
+
+                <ImageView
+                    android:id="@+id/iv_movie_poster"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="16dp"
+                    android:contentDescription="@string/movie_poster_content_description"
+                    app:layout_constraintStart_toStartOf="@+id/tv_original_title"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_original_title"
+                    tools:src="@drawable/ic_sample_movie_poster"/>
+
+                <TextView
+                    android:id="@+id/tv_release_date_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/release_date_label"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/iv_movie_poster"
+                    app:layout_constraintTop_toTopOf="@+id/iv_movie_poster"/>
+
+                <TextView
+                    android:id="@+id/tv_release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/tv_release_date_label"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_release_date_label"
+                    tools:text="@string/sample_movie_release_date_string"/>
+
+                <TextView
+                    android:id="@+id/tv_user_rating_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/user_rating_label"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/tv_release_date_label"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_release_date"/>
+
+                <TextView
+                    android:id="@+id/tv_user_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="@+id/tv_user_rating_label"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_user_rating_label"
+                    tools:text="@string/sample_movie_rating_string"/>
+
+                <Button
+                    android:id="@+id/button_favorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_user_rating"
+                    app:layout_constraintTop_toBottomOf="@id/tv_user_rating"
+                    tools:text="@string/sample_favorite_button_label_string"/>
+
+                <!-- I'll probably make another layout for landscape mode and move this text view next
+                     to the movie poster instead of underneath.
+                -->
+                <TextView
+                    android:id="@+id/tv_movie_synopsis"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/sample_movie_synopsis_string"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/iv_movie_poster"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_movie_poster"
+                    app:layout_constraintVertical_bias="0.0"/>
+
+                <View
+                    android:id="@+id/separator_between_detail_and_trailers"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#7A7A7A"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_movie_synopsis"/>
+
+                <TextView
+                    android:id="@+id/tv_trailers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/movie_detail_trailer_label"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/separator_between_detail_and_trailers"
+                    tools:text="@string/movie_detail_trailer_label"
+                    />
+
+                <!-- No trailers available help message -->
+                <!--
+                     Set the width to wrap content so that the text view does not take all of the layout
+                     space. In this way we can make the text view appear centered.
+                -->
+                <TextView
+                    android:id="@+id/tv_movie_trailers_not_available"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/no_trailers_available_string"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@id/rv_trailers"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_trailers"
+                    tools:text="@string/no_trailers_available_string"
+                    />
+
+                <!-- Remove this comment it was just for testing - android:background="@color/colorPrimary" -->
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_trailers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_trailers"
+                    >
+
+                </android.support.v7.widget.RecyclerView>
+
+                <!-- Reviews -->
+
+                <View
+                    android:id="@+id/separator_between_rv_trailer_and_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#7A7A7A"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/rv_trailers"/>
+
+                <TextView
+                    android:id="@+id/tv_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/movie_detail_review_label"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/separator_between_rv_trailer_and_reviews"
+                    tools:text="@string/movie_detail_review_label"/>
+
+                <!-- No reviews available help message -->
+                <!--
+                     Set the width to wrap content so that the text view does not take all of the layout
+                     space. In this way we can make the text view appear centered.
+                -->
+                <TextView
+                    android:id="@+id/tv_movie_reviews_not_available"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/no_reviews_available_string"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@id/rv_reviews"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_reviews"
+                    tools:text="@string/no_reviews_available_string"
+                    />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_reviews"
+                    app:layout_constraintVertical_bias="0.0">
+
+                </android.support.v7.widget.RecyclerView>
+            </android.support.constraint.ConstraintLayout>
+        </ScrollView>
     </android.support.constraint.ConstraintLayout>
-    </ScrollView>
 </layout>
