@@ -4,6 +4,7 @@ public class PopularMoviesSettings
 {
   public static final int TOP_RATED = 0;
   public static final int MOST_POPULAR = 1;
+  public static final int FAVORITES = 2;
 
   private int sortSetting;
 
