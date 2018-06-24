@@ -63,12 +63,10 @@
     <string translatable="false" name="tmdb_json_movie_results_object_id_int">id</string>
 
     <string translatable="false" name="tmdb_json_movie_videos_results_array">results</string>
-    <string translatable="false" name="tmdb_json_movie_videos_id_int">id</string>
     <string translatable="false" name="tmdb_json_movie_videos_key_string">key</string>
     <string translatable="false" name="tmdb_json_movie_videos_name_string">name</string>
 
     <string translatable="false" name="tmdb_json_movie_reviews_results_array">results</string>
-    <string translatable="false" name="tmdb_json_movie_reviews_id_int">id</string>
     <string translatable="false" name="tmdb_json_movie_reviews_author_string">author</string>
     <string translatable="false" name="tmdb_json_movie_reviews_content_string">content</string>
 
