@@ -3,7 +3,6 @@ package com.example.android.popularmovies.tasks;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.example.android.popularmovies.model.MovieReviewResultObject;
 import com.example.android.popularmovies.utils.PopularMoviesConstants;
@@ -18,8 +17,6 @@ import okhttp3.ResponseBody;
 
 public class MovieReviewResultAsyncTask extends AsyncTask<Integer, Void, MovieReviewResultAsyncTask.Result>
 {
-  private static final String TAG = MovieReviewResultAsyncTask.class.getSimpleName();
-
   private WeakReference<Context> context;
   private IAsyncTaskCompleteListener<Result> listener;
 
@@ -42,8 +39,6 @@ public class MovieReviewResultAsyncTask extends AsyncTask<Integer, Void, MovieRe
   @Override
   protected Result doInBackground(Integer... movieIds)
   {
-    Log.i(MovieReviewResultAsyncTask.TAG, "executing the trailer background task on movie id: " + movieIds[0]);
-
     String theMovieDatabaseApiKey = PopularMoviesConstants.getTheMovieDatabaseApiKey();
     int page = 1; // TODO: Only get the first page of results for now.
 
@@ -52,10 +47,7 @@ public class MovieReviewResultAsyncTask extends AsyncTask<Integer, Void, MovieRe
     Context weakContext = context.get();
     if(weakContext != null)
     {
-      Log.i(MovieReviewResultAsyncTask.TAG, "The context is valid before getting the videos URI");
       Uri uri = TheMovieDatabaseUtils.getReviewsMoviesUri(weakContext, theMovieDatabaseApiKey, page, movieIds[0]);
-
-      Log.i(MovieReviewResultAsyncTask.TAG, "URI: " + uri.toString());
 
       try
       {
@@ -63,22 +55,16 @@ public class MovieReviewResultAsyncTask extends AsyncTask<Integer, Void, MovieRe
 
         if(response.code() == 200) // the movie database returns this code on success
         {
-          Log.i(MovieReviewResultAsyncTask.TAG, "The response is good");
           ResponseBody responseBody = response.body();
 
           if(responseBody != null)
           {
-            Log.i(MovieReviewResultAsyncTask.TAG, "The response body is good");
             String responseBodyToString = responseBody.string();
 
             Context weakContextJson = context.get();
             if(weakContextJson != null)
             {
-              Log.i(MovieReviewResultAsyncTask.TAG, "The context is valid before parsing the reviews json");
-              Log.i(MovieReviewResultAsyncTask.TAG, "JSON: \n" + responseBodyToString);
               movieReviewResultObjectList = TheMovieDatabaseUtils.movieReviewJsonStringToMovieReviewResultList(weakContext, responseBodyToString, movieIds[0]);
-
-              Log.i(MovieReviewResultAsyncTask.TAG, movieReviewResultObjectList != null ? "got a valid result list" : "result list is null");
             }
             else
             {
