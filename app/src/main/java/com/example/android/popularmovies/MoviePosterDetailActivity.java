@@ -17,7 +17,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.databinding.ActivityMoviePosterDetailBinding;
 import com.example.android.popularmovies.db.MovieFavoriteContract;
@@ -148,6 +147,38 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
     dataBinding.tvUserRating.setText(movieListResultObject.getUserRating());
 
     dataBinding.buttonFavorite.setOnClickListener(new FavoriteButtonClick());
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState)
+  {
+    super.onSaveInstanceState(outState);
+
+    outState.putIntArray(getString(R.string.scroll_position_state), new int[]
+            {
+                    dataBinding.svMoviePosterDetail.getScrollX(),
+                    dataBinding.svMoviePosterDetail.getScrollY()
+            });
+  }
+
+  @Override
+  protected void onRestoreInstanceState(Bundle savedInstanceState)
+  {
+    super.onRestoreInstanceState(savedInstanceState);
+
+    final int[] position = savedInstanceState.getIntArray(getString(R.string.scroll_position_state));
+
+    if(position != null)
+    {
+      dataBinding.svMoviePosterDetail.postDelayed(new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          dataBinding.svMoviePosterDetail.scrollTo(position[0], position[1]);
+        }
+      }, 500);
+    }
   }
 
   @Override
