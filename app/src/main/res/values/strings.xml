@@ -31,7 +31,8 @@
 
     <!-- keys for bundle data -->
     <string translatable="false" name="movie_sort_by_key">movie_sort_by_key</string>
-    <string translatable="false" name="movie_visible_position_key">movie_visible_position_key</string>
+    <string translatable="false" name="grid_position_state">grid_position_state_key</string>
+    <string translatable="false" name="scroll_position_state">scroll_position_state_key</string>
 
     <!-- keys for shared preferences -->
     <string name="shared_preferences_favorites_changed_key">favorites_changed</string>
