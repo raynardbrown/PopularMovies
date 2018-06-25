@@ -352,7 +352,7 @@ public class MovieFavoriteContentProvider extends ContentProvider
                     @Nullable String[] selectionArgs)
   {
     // We are not using update in this app
-    return 0;
+    throw new UnsupportedOperationException("Unknown uri: " + uri);
   }
 
   @Nullable
@@ -360,6 +360,6 @@ public class MovieFavoriteContentProvider extends ContentProvider
   public String getType(@NonNull Uri uri)
   {
     // We are not using getType in this app
-    return null;
+    throw new UnsupportedOperationException("Unknown uri: " + uri);
   }
 }
