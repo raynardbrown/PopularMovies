@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -76,13 +77,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
    */
   private int totalRemotePages;
 
-  /**
-   * The index of the first visible item within the grid view. Useful for scrolling back to the
-   * position within the grid view that was clicked after returning from the detail activity.
-   */
-  private int firstVisiblePosition;
-
   private SharedPreferences sharedPreferences;
+
+  /**
+   * Maintains the state of the grid on a configuration change.
+   */
+  private Parcelable gridViewParcelable;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -103,15 +103,11 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     if(savedInstanceState != null)
     {
       popularMovieSettings = new PopularMoviesSettings(savedInstanceState.getInt(getString(R.string.movie_sort_by_key)));
-
-      firstVisiblePosition = savedInstanceState.getInt(getString(R.string.movie_visible_position_key));
     }
     else
     {
       // Default sort value
       popularMovieSettings = new PopularMoviesSettings(PopularMoviesSettings.MOST_POPULAR);
-
-      firstVisiblePosition = 0;
     }
 
     // We are using cached data in the favorites state, no need to start up a network broadcast
@@ -256,6 +252,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
       restoreDefaultViewState();
 
+      // reset the grid parcelable
+      gridViewParcelable = null;
+
       if(popularMovieSettings.getSortSetting() != PopularMoviesSettings.FAVORITES)
       {
         launchBroadCastReceiverIfNotRegistered();
@@ -290,10 +289,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     // save the sort setting
     outState.putInt(getString(R.string.movie_sort_by_key), popularMovieSettings.getSortSetting());
 
-    firstVisiblePosition = dataBinding.gvMoviePosters.getFirstVisiblePosition();
-
-    // save the visible position
-    outState.putInt(getString(R.string.movie_visible_position_key), firstVisiblePosition);
+    // save the grid position
+    gridViewParcelable = dataBinding.gvMoviePosters.onSaveInstanceState();
+    outState.putParcelable(getString(R.string.grid_position_state), gridViewParcelable);
   }
 
   @Override
@@ -303,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
     popularMovieSettings = new PopularMoviesSettings(savedInstanceState.getInt(getString(R.string.movie_sort_by_key)));
 
-    firstVisiblePosition = savedInstanceState.getInt(getString(R.string.movie_visible_position_key));
+    gridViewParcelable = savedInstanceState.getParcelable(getString(R.string.grid_position_state));
   }
 
   /**
@@ -316,18 +314,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
   {
     super.onResume();
 
-    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-    boolean favoritesChanged = sharedPreferences.getBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
-
-    if(favoritesChanged)
+    if(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES)
     {
-      if(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES)
-      {
-        // Kick off a query since we are in the favorites state
-        initializeAdapter();
+      sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        dispatchMovieListResultRequest();
+      boolean favoritesChanged = sharedPreferences.getBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
+
+      if (favoritesChanged)
+      {
+          // Kick off a query since we are in the favorites state
+          initializeAdapter();
+
+          dispatchMovieListResultRequest();
       }
     }
   }
@@ -396,8 +394,27 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             // update the current page
             MainActivity.this.currentRemotePage++;
 
-            // scroll to the position in the grid before a configuration change occurred.
-            MainActivity.this.dataBinding.gvMoviePosters.smoothScrollToPosition(MainActivity.this.firstVisiblePosition);
+            /*
+             * Scroll to the position in the grid before a configuration change occurred.
+             *
+             * Note: For some strange reason calling onRestoreInstanceState(gridViewParcelable),
+             * without at least a 275ms delay (from my testing) doesn't seem to work. I don't
+             * understand why since at this point we are on the main/UI thread. The delay seems
+             * arbitrary.
+             *
+             * I've bumped the delay to 500ms. I hope that doesn't cause problems.
+             */
+            if(gridViewParcelable != null)
+            {
+              dataBinding.gvMoviePosters.postDelayed(new Runnable()
+              {
+                @Override
+                public void run()
+                {
+                    dataBinding.gvMoviePosters.onRestoreInstanceState(gridViewParcelable);
+                }
+              }, 500);
+            }
           }
         }
         else if (MainActivity.this.movieListResultObjectList.isEmpty())
@@ -435,6 +452,28 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           if(MainActivity.this.movieListResultObjectList.size() > 0)
           {
             MainActivity.this.adapter.notifyDataSetChanged();
+
+            /*
+             * Scroll to the position in the grid before a configuration change occurred.
+             *
+             * Note: For some strange reason calling onRestoreInstanceState(gridViewParcelable),
+             * without at least a 275ms delay (from my testing) doesn't seem to work. I don't
+             * understand why since at this point we are on the main/UI thread. The delay seems
+             * arbitrary.
+             *
+             * I've bumped the delay to 500ms. I hope that doesn't cause problems.
+             */
+            if(gridViewParcelable != null)
+            {
+              dataBinding.gvMoviePosters.postDelayed(new Runnable()
+              {
+                @Override
+                public void run()
+                {
+                  dataBinding.gvMoviePosters.onRestoreInstanceState(gridViewParcelable);
+                }
+              }, 500);
+            }
           }
           else
           {
@@ -446,6 +485,9 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           cursor.close();
 
           // Also reset the shared preferences
+
+          sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+
           SharedPreferences.Editor editor = sharedPreferences.edit();
           editor.putBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
           editor.apply();
