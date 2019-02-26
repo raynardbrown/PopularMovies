@@ -1,7 +1,5 @@
 package com.example.android.popularmovies;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -24,6 +22,8 @@ import com.example.android.popularmovies.databinding.ActivityMainBinding;
 import com.example.android.popularmovies.db.MovieFavoriteContract;
 import com.example.android.popularmovies.model.MovieListResultObject;
 import com.example.android.popularmovies.model.PopularMoviesSettings;
+import com.example.android.popularmovies.receiver.INetworkListener;
+import com.example.android.popularmovies.receiver.NetworkBroadcastReceiver;
 import com.example.android.popularmovies.tasks.IAsyncTaskCompleteListener;
 import com.example.android.popularmovies.tasks.MovieFavoriteDbQueryAsyncTask;
 import com.example.android.popularmovies.tasks.MovieListResultAsyncTask;
@@ -48,7 +48,8 @@ import java.util.List;
  * </ul>
  */
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener,
-                                                               GridView.OnItemClickListener
+                                                               GridView.OnItemClickListener,
+                                                               INetworkListener
 {
   /**
    * A collection of movie results from a query of the TMDb.
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
       IntentFilter networkIntentFilter = new IntentFilter();
       networkIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
-      networkBroadcastReceiver = new NetworkBroadcastReceiver();
+      networkBroadcastReceiver = new NetworkBroadcastReceiver(this);
 
       registerReceiver(networkBroadcastReceiver, networkIntentFilter);
     }
@@ -341,6 +342,28 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     }
   }
 
+  @Override
+  public void onNetworkConnected()
+  {
+    showGridViewAndHideNetworkErrorMessage();
+
+    // We also need to launch the async task if the movieListResultObjectList is empty
+    // since we do not have any results.
+    if(this.movieListResultObjectList.isEmpty())
+    {
+      dispatchMovieListResultRequest();
+    }
+  }
+
+  @Override
+  public void onNetworkDisconnected()
+  {
+    if(this.movieListResultObjectList.isEmpty())
+    {
+      hideGridViewAndShowNetworkErrorMessage();
+    }
+  }
+
   private void hideGridViewAndShowNetworkErrorMessage()
   {
     if(popularMovieSettings.getSortSetting() != PopularMoviesSettings.FAVORITES)
@@ -491,43 +514,6 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           SharedPreferences.Editor editor = sharedPreferences.edit();
           editor.putBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
           editor.apply();
-        }
-      }
-    }
-  }
-
-  /**
-   * NetworkBroadcastReceiver is a BroadcastReceiver that listens for network connectivity events
-   * from the system and notifies this application accordingly.
-   */
-  private class NetworkBroadcastReceiver extends BroadcastReceiver
-  {
-    @Override
-    public void onReceive(Context context, Intent intent)
-    {
-      String action = intent.getAction();
-
-      if(action != null && action.equals(ConnectivityManager.CONNECTIVITY_ACTION))
-      {
-        if(intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false))
-        {
-          // We have no connectivity
-          if(MainActivity.this.movieListResultObjectList.isEmpty())
-          {
-            hideGridViewAndShowNetworkErrorMessage();
-          }
-        }
-        else
-        {
-          // We have connectivity
-          showGridViewAndHideNetworkErrorMessage();
-
-          // We also need to launch the async task if the movieListResultObjectList is empty
-          // since we do not have any results.
-          if(MainActivity.this.movieListResultObjectList.isEmpty())
-          {
-            dispatchMovieListResultRequest();
-          }
         }
       }
     }
