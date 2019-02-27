@@ -116,7 +116,7 @@ public class MoviePosterImageAdapter extends BaseAdapter
 
             Picasso.with(MoviePosterImageAdapter.this.context)
                     .load(uri.toString())
-                    .placeholder(android.R.drawable.star_big_on) // TODO: Use a real loading image :-)
+                    .placeholder(R.drawable.image_placeholder)
                     .into(imageView);
           }
 
