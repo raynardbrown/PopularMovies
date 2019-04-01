@@ -113,14 +113,14 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
       // Set up the recycler view (trailers)
       LinearLayoutManager trailerLayoutManager = new LinearLayoutManager(this);
       dataBinding.rvTrailers.setLayoutManager(trailerLayoutManager);
-      movieVideoResultObjectList = new ArrayList<MovieVideoResultObject>();
+      movieVideoResultObjectList = new ArrayList<>();
       movieTrailerAdapter = new MovieTrailerAdapter(movieVideoResultObjectList, this);
       dataBinding.rvTrailers.setAdapter(movieTrailerAdapter);
 
       // Set up the recycler view (reviews)
       LinearLayoutManager reviewLayoutManager = new LinearLayoutManager(this);
       dataBinding.rvReviews.setLayoutManager(reviewLayoutManager);
-      movieReviewResultObjectList = new ArrayList<MovieReviewResultObject>();
+      movieReviewResultObjectList = new ArrayList<>();
       movieReviewAdapter = new MovieReviewAdapter(movieReviewResultObjectList);
       dataBinding.rvReviews.setAdapter(movieReviewAdapter);
 
