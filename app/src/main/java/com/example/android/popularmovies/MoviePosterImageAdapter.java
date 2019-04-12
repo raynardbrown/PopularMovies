@@ -93,14 +93,14 @@ public class MoviePosterImageAdapter extends BaseAdapter
     {
       if(result != null)
       {
-        Cursor cursor = result.cursor;
+        Cursor movieFavoriteCursor = result.movieFavoriteCursor;
 
-        if(cursor != null)
+        if(movieFavoriteCursor != null)
         {
-          if(cursor.moveToFirst())
+          if(movieFavoriteCursor.moveToFirst())
           {
             // use the image data from the favorites database
-            byte[] moviePosterImageData = cursor.getBlob(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_IMAGE_DATA));
+            byte[] moviePosterImageData = movieFavoriteCursor.getBlob(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_IMAGE_DATA));
 
             ImageView imageView = ((DbQueryPojo)result.extraData).imageView;
             imageView.setImageBitmap(BitmapFactory.decodeByteArray(moviePosterImageData, 0, moviePosterImageData.length));
@@ -121,7 +121,7 @@ public class MoviePosterImageAdapter extends BaseAdapter
           }
 
           // Done with the cursor so close it
-          cursor.close();
+          movieFavoriteCursor.close();
         }
       }
     }

@@ -435,19 +435,19 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
     {
       if(result != null)
       {
-        Cursor cursor = result.cursor;
+        Cursor movieFavoriteCursor = result.movieFavoriteCursor;
 
-        if(cursor != null)
+        if(movieFavoriteCursor != null)
         {
-          if(cursor.moveToFirst())
+          if(movieFavoriteCursor.moveToFirst())
           {
-            int id = cursor.getInt(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
+            int id = movieFavoriteCursor.getInt(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
 
             if (id == MoviePosterDetailActivity.this.movieListResultObject.getId())
             {
               MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.UNDO_FAVORITE_STATE;
 
-              moviePosterImageData = cursor.getBlob(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_IMAGE_DATA));
+              moviePosterImageData = movieFavoriteCursor.getBlob(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_IMAGE_DATA));
             }
             else
             {
@@ -462,7 +462,7 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
           }
 
           // We are finished with the cursor so close it
-          cursor.close();
+          movieFavoriteCursor.close();
         }
         else
         {

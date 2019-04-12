@@ -41,13 +41,13 @@ public class MovieFavoriteDbQueryAsyncTask extends AsyncTask<MovieFavoriteDbQuer
 
   public class Result
   {
-    public Cursor cursor;
+    public Cursor movieFavoriteCursor;
 
     public Object extraData;
 
-    Result(Cursor cursor, Object extraData)
+    Result(Cursor movieFavoriteCursor, Object extraData)
     {
-      this.cursor = cursor;
+      this.movieFavoriteCursor = movieFavoriteCursor;
       this.extraData = extraData;
     }
   }

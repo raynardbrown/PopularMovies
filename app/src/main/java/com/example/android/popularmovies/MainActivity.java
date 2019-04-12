@@ -456,18 +456,18 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     {
       if(result != null)
       {
-        Cursor cursor = result.cursor;
+        Cursor movieFavoriteCursor = result.movieFavoriteCursor;
 
-        if(cursor != null)
+        if(movieFavoriteCursor != null)
         {
-          for (; cursor.moveToNext(); )
+          for (; movieFavoriteCursor.moveToNext(); )
           {
-            int movieId = cursor.getInt(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
-            String movieTitle = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_TITLE));
-            String moviePosterUrl = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_URL));
-            String moviePlot = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_PLOT_SYNOPSIS));
-            String movieReleaseDate = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_RELEASE_DATE));
-            String movieUserRating = cursor.getString(cursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_USER_RATING));
+            int movieId = movieFavoriteCursor.getInt(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
+            String movieTitle = movieFavoriteCursor.getString(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_TITLE));
+            String moviePosterUrl = movieFavoriteCursor.getString(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_URL));
+            String moviePlot = movieFavoriteCursor.getString(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_PLOT_SYNOPSIS));
+            String movieReleaseDate = movieFavoriteCursor.getString(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_RELEASE_DATE));
+            String movieUserRating = movieFavoriteCursor.getString(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_USER_RATING));
 
             MainActivity.this.movieListResultObjectList.add(new MovieListResultObject(moviePosterUrl, moviePlot, movieReleaseDate, movieTitle, movieUserRating, movieId));
           }
@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
           }
 
           // finished with the cursor so close it.
-          cursor.close();
+          movieFavoriteCursor.close();
 
           // Also reset the shared preferences
 
