@@ -303,6 +303,7 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
 
       Picasso.with(getApplicationContext())
               .load(uri.toString())
+              .placeholder(R.drawable.image_placeholder)
               .into(dataBinding.ivMoviePoster, new MoviePosterCompleteHandler());
     }
   }
