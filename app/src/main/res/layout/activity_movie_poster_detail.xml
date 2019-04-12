@@ -67,7 +67,8 @@
                     android:contentDescription="@string/movie_poster_content_description"
                     app:layout_constraintStart_toStartOf="@+id/tv_original_title"
                     app:layout_constraintTop_toBottomOf="@+id/tv_original_title"
-                    tools:src="@drawable/ic_sample_movie_poster"/>
+                    android:src="@drawable/image_placeholder"
+                    tools:src="@drawable/image_placeholder"/>
 
                 <TextView
                     android:id="@+id/tv_release_date_label"
