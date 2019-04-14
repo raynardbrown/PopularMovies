@@ -42,19 +42,26 @@ public class MovieFavoriteDbQueryAsyncTask extends AsyncTask<MovieFavoriteDbQuer
   public class Result
   {
     public Cursor movieFavoriteCursor;
+    public Cursor movieTrailerCursor;
+    public Cursor movieReviewCursor;
 
     public Object extraData;
 
-    Result(Cursor movieFavoriteCursor, Object extraData)
+    Result(Cursor movieFavoriteCursor,
+           Cursor movieTrailerCursor,
+           Cursor movieReviewCursor,
+           Object extraData)
     {
       this.movieFavoriteCursor = movieFavoriteCursor;
+      this.movieTrailerCursor = movieTrailerCursor;
+      this.movieReviewCursor = movieReviewCursor;
       this.extraData = extraData;
     }
   }
 
   public MovieFavoriteDbQueryAsyncTask(Context context, IAsyncTaskCompleteListener<Result> listener)
   {
-    this.context = new WeakReference<Context>(context);
+    this.context = new WeakReference<>(context);
     this.listener = listener;
   }
 
@@ -69,29 +76,33 @@ public class MovieFavoriteDbQueryAsyncTask extends AsyncTask<MovieFavoriteDbQuer
       {
         if(params.length > 0)
         {
+          String movieId = null;
+
           if(params[0].movieId != null)
           {
             // query one item
-
-            // Make sure to use the correct URI
-            Uri uri = MovieFavoriteContract.MovieFavorites.CONTENT_URI;
-            uri = uri.buildUpon().appendPath(Integer.toString(params[0].movieId)).build();
-
-            return new Result(weakContext.getContentResolver().query(uri,
-                    null,
-                    null,
-                    null,
-                    null), params[0].extraData);
+            movieId = Integer.toString(params[0].movieId);
           }
-          else
-          {
-            // get all rows
-            return new Result(weakContext.getContentResolver().query(MovieFavoriteContract.MovieFavorites.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null), params[0].extraData);
-          }
+
+          // Get the movie favorite cursor
+          Cursor movieFavoriteCursor = getCursor(weakContext,
+                  MovieFavoriteContract.MovieFavorites.CONTENT_URI,
+                  movieId);
+
+          // Get the movie favorite trailer cursor
+          Cursor movieTrailerCursor = getCursor(weakContext,
+                  MovieFavoriteContract.MovieTrailers.CONTENT_URI,
+                  movieId);
+
+          // Get the movie favorite review cursor
+          Cursor movieReviewCursor = getCursor(weakContext,
+                  MovieFavoriteContract.MovieReviews.CONTENT_URI,
+                  movieId);
+
+          return new Result(movieFavoriteCursor,
+                  movieTrailerCursor,
+                  movieReviewCursor,
+                  params[0].extraData);
         }
         else
         {
@@ -116,5 +127,19 @@ public class MovieFavoriteDbQueryAsyncTask extends AsyncTask<MovieFavoriteDbQuer
   {
     super.onPostExecute(result);
     listener.onTaskComplete(result);
+  }
+
+  private Cursor getCursor(Context context, Uri contentUri, String movieId)
+  {
+    if(movieId != null)
+    {
+      contentUri = contentUri.buildUpon().appendPath(movieId).build();
+    }
+
+    return context.getContentResolver().query(contentUri,
+            null,
+            null,
+            null,
+            null);
   }
 }
