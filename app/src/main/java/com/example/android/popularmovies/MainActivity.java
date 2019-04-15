@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void initializeAdapter()
   {
-    movieListResultObjectList = new ArrayList<MovieListResultObject>();
+    movieListResultObjectList = new ArrayList<>();
 
     adapter = new MoviePosterImageAdapter(this, movieListResultObjectList);
 
