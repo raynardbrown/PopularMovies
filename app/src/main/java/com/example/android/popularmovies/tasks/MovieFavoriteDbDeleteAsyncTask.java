@@ -38,7 +38,7 @@ public class MovieFavoriteDbDeleteAsyncTask extends AsyncTask<MovieFavoriteDbDel
 
   public MovieFavoriteDbDeleteAsyncTask(Context context, IAsyncTaskCompleteListener<Result> listener)
   {
-    this.context = new WeakReference<Context>(context);
+    this.context = new WeakReference<>(context);
     this.listener = listener;
   }
 
