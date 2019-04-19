@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
   private void dispatchMovieListResultRequest()
   {
-    if(!(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES)&&
+    if(!(popularMovieSettings.getSortSetting() == PopularMoviesSettings.FAVORITES) &&
             (currentRemotePage == 0 || currentRemotePage < totalRemotePages))
     {
       new MovieListResultAsyncTask(this, new MovieListResultAsyncTaskCompleteListener()).execute(popularMovieSettings);
@@ -321,12 +321,12 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
       boolean favoritesChanged = sharedPreferences.getBoolean(getString(R.string.shared_preferences_favorites_changed_key), false);
 
-      if (favoritesChanged)
+      if(favoritesChanged)
       {
-          // Kick off a query since we are in the favorites state
-          initializeAdapter();
+        // Kick off a query since we are in the favorites state
+        initializeAdapter();
 
-          dispatchMovieListResultRequest();
+        dispatchMovieListResultRequest();
       }
     }
   }
@@ -400,15 +400,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
     @Override
     public void onTaskComplete(MovieListResultAsyncTask.Results result)
     {
-      if (result != null)
+      if(result != null)
       {
-        if (result.movieListResultObjectList != null)
+        if(result.movieListResultObjectList != null)
         {
           // We have valid results
 
           // Make sure we are not adding an existing page (for example two async tasks fired)
           // If we are throw the results away since we already have the page
-          if (MainActivity.this.currentRemotePage != result.page)
+          if(MainActivity.this.currentRemotePage != result.page)
           {
             MainActivity.this.movieListResultObjectList.addAll(result.movieListResultObjectList);
 
@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             }
           }
         }
-        else if (MainActivity.this.movieListResultObjectList.isEmpty())
+        else if(MainActivity.this.movieListResultObjectList.isEmpty())
         {
           // We didn't get anything from the remote server and we currently have no posters displayed
           MainActivity.this.hideGridViewAndShowNetworkErrorMessage();
@@ -460,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
         if(movieFavoriteCursor != null)
         {
-          for (; movieFavoriteCursor.moveToNext(); )
+          for(; movieFavoriteCursor.moveToNext(); )
           {
             int movieId = movieFavoriteCursor.getInt(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
             String movieTitle = movieFavoriteCursor.getString(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_TITLE));
