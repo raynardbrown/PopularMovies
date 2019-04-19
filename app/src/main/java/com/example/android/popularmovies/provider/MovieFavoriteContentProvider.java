@@ -287,7 +287,7 @@ public class MovieFavoriteContentProvider extends ContentProvider
         // index 1, is the segment next to movie_favorite
         String id = uri.getPathSegments().get(1);
 
-        String tempSelection = "_id=?"; // column name
+        String tempSelection = MovieFavoriteContract.MovieFavorites._ID + "=?"; // column name
         String[] tempSelectionArgs = new String[]{id}; // column value
 
         numberDeleted = db.delete(MovieFavoriteContract.MovieFavorites.TABLE_NAME, tempSelection, tempSelectionArgs);
@@ -306,7 +306,7 @@ public class MovieFavoriteContentProvider extends ContentProvider
       {
         String id = uri.getPathSegments().get(1);
 
-        String tempSelection = "_id=?"; // column name
+        String tempSelection = MovieFavoriteContract.MovieTrailers.MOVIE_FAVORITE_FOREIGN_KEY + "=?"; // column name
         String[] tempSelectionArgs = new String[]{id}; // column value
 
         numberDeleted = db.delete(MovieFavoriteContract.MovieTrailers.TABLE_NAME, tempSelection, tempSelectionArgs);
@@ -325,7 +325,7 @@ public class MovieFavoriteContentProvider extends ContentProvider
       {
         String id = uri.getPathSegments().get(1);
 
-        String tempSelection = "_id=?"; // column name
+        String tempSelection = MovieFavoriteContract.MovieReviews.MOVIE_FAVORITE_FOREIGN_KEY + "=?"; // column name
         String[] tempSelectionArgs = new String[]{id}; // column value
 
         numberDeleted = db.delete(MovieFavoriteContract.MovieReviews.TABLE_NAME, tempSelection, tempSelectionArgs);
