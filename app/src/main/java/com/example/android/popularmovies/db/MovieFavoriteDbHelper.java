@@ -50,6 +50,15 @@ public class MovieFavoriteDbHelper extends SQLiteOpenHelper
   }
 
   @Override
+  public void onOpen(SQLiteDatabase db)
+  {
+    super.onOpen(db);
+
+    // enable SQLite support for foreign keys in database schemas
+    db.execSQL("PRAGMA foreign_keys=ON");
+  }
+
+  @Override
   public void onCreate(SQLiteDatabase db)
   {
     // Create all of the tables
