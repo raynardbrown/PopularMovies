@@ -80,11 +80,11 @@ public class MovieFavoriteContentProvider extends ContentProvider
       case MovieFavoriteContentProvider.MOVIE_FAVORITE:
       {
         // insert values into the movie_favorite table
-        long id = db.insert(MovieFavoriteContract.MovieFavorites.TABLE_NAME, null, values);
+        long newInsertedRowId = db.insert(MovieFavoriteContract.MovieFavorites.TABLE_NAME, null, values);
 
-        if(id > 0)
+        if(newInsertedRowId != -1)
         {
-          returnUri = ContentUris.withAppendedId(MovieFavoriteContract.MovieFavorites.CONTENT_URI, id);
+          returnUri = ContentUris.withAppendedId(MovieFavoriteContract.MovieFavorites.CONTENT_URI, newInsertedRowId);
         }
         else
         {
@@ -96,11 +96,11 @@ public class MovieFavoriteContentProvider extends ContentProvider
 
       case MovieFavoriteContentProvider.MOVIE_TRAILER:
       {
-        long id = db.insert(MovieFavoriteContract.MovieTrailers.TABLE_NAME, null, values);
+        long newInsertedRowId = db.insert(MovieFavoriteContract.MovieTrailers.TABLE_NAME, null, values);
 
-        if(id > 0)
+        if(newInsertedRowId != -1)
         {
-          returnUri = ContentUris.withAppendedId(MovieFavoriteContract.MovieTrailers.CONTENT_URI, id);
+          returnUri = ContentUris.withAppendedId(MovieFavoriteContract.MovieTrailers.CONTENT_URI, newInsertedRowId);
         }
         else
         {
@@ -112,11 +112,11 @@ public class MovieFavoriteContentProvider extends ContentProvider
 
       case MovieFavoriteContentProvider.MOVIE_REVIEW:
       {
-        long id = db.insert(MovieFavoriteContract.MovieReviews.TABLE_NAME, null, values);
+        long newInsertedRowId = db.insert(MovieFavoriteContract.MovieReviews.TABLE_NAME, null, values);
 
-        if(id > 0)
+        if(newInsertedRowId != -1)
         {
-          returnUri = ContentUris.withAppendedId(MovieFavoriteContract.MovieReviews.CONTENT_URI, id);
+          returnUri = ContentUris.withAppendedId(MovieFavoriteContract.MovieReviews.CONTENT_URI, newInsertedRowId);
         }
         else
         {
