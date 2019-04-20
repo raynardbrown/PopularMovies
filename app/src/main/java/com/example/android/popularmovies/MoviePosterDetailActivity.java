@@ -128,12 +128,6 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
       dataBinding.buttonFavorite.setVisibility(View.INVISIBLE);
       updateViews();
 
-      // Fire off the trailer async task
-      new MovieTrailerResultAsyncTask(this, new MovieTrailerResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
-
-      // Fire off the review async task
-      new MovieReviewResultAsyncTask(this, new MovieReviewResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
-
       MovieFavoriteDbQueryAsyncTask.Param param = new MovieFavoriteDbQueryAsyncTask.Param(movieListResultObject.getId(), null);
       new MovieFavoriteDbQueryAsyncTask(this, new MovieFavoriteDbQueryAsyncTaskCompleteListener()).execute(param);
     }
@@ -439,41 +433,125 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
 
         if(movieFavoriteCursor != null)
         {
-          if(movieFavoriteCursor.moveToFirst())
+          if(movieFavoriteCursor.getCount() > 0)
           {
-            int id = movieFavoriteCursor.getInt(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
-
-            if (id == MoviePosterDetailActivity.this.movieListResultObject.getId())
+            if(movieFavoriteCursor.moveToFirst())
             {
-              MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.UNDO_FAVORITE_STATE;
+              int id = movieFavoriteCursor.getInt(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites._ID));
 
-              moviePosterImageData = movieFavoriteCursor.getBlob(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_IMAGE_DATA));
-            }
-            else
-            {
-              // Got an id that wasn't this detail activity's movie id. (Should never happen)
-              MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.FAVORITE_STATE;
+              if(id == MoviePosterDetailActivity.this.movieListResultObject.getId())
+              {
+                MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.UNDO_FAVORITE_STATE;
+
+                moviePosterImageData = movieFavoriteCursor.getBlob(movieFavoriteCursor.getColumnIndex(MovieFavoriteContract.MovieFavorites.MOVIE_POSTER_IMAGE_DATA));
+
+                Cursor movieTrailerCursor = result.movieTrailerCursor;
+
+                if(movieTrailerCursor != null)
+                {
+                  for(; movieTrailerCursor.moveToNext(); )
+                  {
+                    String trailerTitle = movieTrailerCursor.getString(movieTrailerCursor.getColumnIndex(MovieFavoriteContract.MovieTrailers.TRAILER_CLIP_TITLE));
+                    String trailerYouTubeKey = movieTrailerCursor.getString(movieTrailerCursor.getColumnIndex(MovieFavoriteContract.MovieTrailers.TRAILER_YOUTUBE_KEY));
+
+                    movieVideoResultObjectList.add(new MovieVideoResultObject(id, trailerTitle, trailerYouTubeKey));
+                  }
+
+                  if(movieVideoResultObjectList.size() > 0)
+                  {
+                    // Enable the share button flag
+                    enableShareButton = true;
+
+                    MoviePosterDetailActivity.this.movieTrailerAdapter.notifyDataSetChanged();
+                  }
+                  else
+                  {
+                    // no trailers available
+                    MoviePosterDetailActivity.this.dataBinding.tvMovieTrailersNotAvailable.setVisibility(View.VISIBLE);
+                  }
+
+                  movieTrailerCursor.close();
+                }
+
+                MoviePosterDetailActivity.this.trailerTaskComplete = true;
+
+                Cursor movieReviewCursor = result.movieReviewCursor;
+
+                if(movieReviewCursor != null)
+                {
+                  for(; movieReviewCursor.moveToNext(); )
+                  {
+                    String reviewAuthor = movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieFavoriteContract.MovieReviews.REVIEW_AUTHOR));
+                    String reviewContent = movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieFavoriteContract.MovieReviews.REVIEW_CONTENT));
+
+                    movieReviewResultObjectList.add(new MovieReviewResultObject(id, reviewAuthor, reviewContent));
+                  }
+
+                  if(movieReviewResultObjectList.size() > 0)
+                  {
+                    MoviePosterDetailActivity.this.movieReviewAdapter.notifyDataSetChanged();
+                  }
+                  else
+                  {
+                    // no reviews available
+                    MoviePosterDetailActivity.this.dataBinding.tvMovieReviewsNotAvailable.setVisibility(View.VISIBLE);
+                  }
+
+                  movieReviewCursor.close();
+                }
+
+                MoviePosterDetailActivity.this.reviewTaskComplete = true;
+              }
+              else
+              {
+                // Got an id that wasn't this detail activity's movie id.
+                MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.FAVORITE_STATE;
+
+                // Fire off the trailer async task
+                new MovieTrailerResultAsyncTask(MoviePosterDetailActivity.this,
+                        new MovieTrailerResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
+
+                // Fire off the review async task
+                new MovieReviewResultAsyncTask(MoviePosterDetailActivity.this,
+                        new MovieReviewResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
+              }
             }
           }
           else
           {
             // cursor is empty
             MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.FAVORITE_STATE;
+
+            // Fire off the trailer async task
+            new MovieTrailerResultAsyncTask(MoviePosterDetailActivity.this,
+                    new MovieTrailerResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
+
+            // Fire off the review async task
+            new MovieReviewResultAsyncTask(MoviePosterDetailActivity.this,
+                    new MovieReviewResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
           }
 
           // We are finished with the cursor so close it
           movieFavoriteCursor.close();
         }
-        else
-        {
-          MoviePosterDetailActivity.this.favoriteState = MoviePosterDetailActivity.FAVORITE_STATE;
-        }
       }
+      else
+      {
+        // Fire off the trailer async task
+        new MovieTrailerResultAsyncTask(MoviePosterDetailActivity.this,
+                new MovieTrailerResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
+
+        // Fire off the review async task
+        new MovieReviewResultAsyncTask(MoviePosterDetailActivity.this,
+                new MovieReviewResultAsyncTaskCompleteListener()).execute(movieListResultObject.getId());
+      }
+
       MoviePosterDetailActivity.this.queryTaskComplete = true;
       MoviePosterDetailActivity.this.notifyTaskComplete();
 
       // Fetch the movie poster image
       MoviePosterDetailActivity.this.dispatchMoviePosterImageDownload();
+
     } // end onTaskComplete
   } // end MovieFavoriteDbQueryAsyncTaskCompleteListener
 
