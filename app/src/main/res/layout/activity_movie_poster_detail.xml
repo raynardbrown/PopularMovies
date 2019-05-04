@@ -192,7 +192,6 @@
                     tools:text="@string/no_trailers_available_string"
                     />
 
-                <!-- Remove this comment it was just for testing - android:background="@color/colorPrimary" -->
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_trailers"
                     android:layout_width="0dp"
