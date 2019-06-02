@@ -212,24 +212,29 @@ public class MoviePosterDetailActivity extends AppCompatActivity implements IMov
 
   private void onShareButtonClick()
   {
-    String mimeType = "text/plain";
-    String title = this.movieVideoResultObjectList.get(0).getVideoClipName();
-
-    Uri uri = Uri.parse(getString(R.string.youtube_website_base_url_string)).buildUpon()
-            .appendQueryParameter("v", this.movieVideoResultObjectList.get(0).getKey())
-            .build();
-
-    String shareText = uri.toString();
-
-    Intent shareIntent = ShareCompat.IntentBuilder.from(this)
-            .setChooserTitle(title)
-            .setType(mimeType)
-            .setText(shareText)
-            .createChooserIntent();
-
-    if(shareIntent.resolveActivity(getPackageManager()) != null)
+    if(this.movieVideoResultObjectList.size() > 0)
     {
-      startActivity(shareIntent);
+      MovieVideoResultObject movieVideoResultObject = this.movieVideoResultObjectList.get(0);
+
+      String mimeType = "text/plain";
+      String title = movieVideoResultObject.getVideoClipName();
+
+      Uri uri = Uri.parse(getString(R.string.youtube_website_base_url_string)).buildUpon()
+              .appendQueryParameter("v", movieVideoResultObject.getKey())
+              .build();
+
+      String shareText = uri.toString();
+
+      Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+              .setChooserTitle(title)
+              .setType(mimeType)
+              .setText(shareText)
+              .createChooserIntent();
+
+      if(shareIntent.resolveActivity(getPackageManager()) != null)
+      {
+        startActivity(shareIntent);
+      }
     }
   }
 
