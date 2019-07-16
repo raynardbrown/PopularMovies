@@ -3,6 +3,7 @@
     <string name="movie_poster_detail_name">Movie Detail</string>
 
     <!-- sort by menu strings -->
+    <string name="info_icon_name">App Info</string>
     <string name="sort_by_icon_name">Sort by</string>
     <string name="share_icon_name">Share</string>
     <string name="sort_by_menu_most_popular">Most popular</string>
