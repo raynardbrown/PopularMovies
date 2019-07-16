@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_info_menuitem"
+        android:icon="@drawable/ic_info_outline_48px"
+        android:title="@string/info_icon_name"
+        app:showAsAction="ifRoom"/>
+    <item
         android:id="@+id/action_sort_by_menuitem"
         android:icon="@drawable/ic_sort_48px"
         android:title="@string/sort_by_icon_name"
