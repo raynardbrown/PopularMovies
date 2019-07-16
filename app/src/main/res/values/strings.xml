@@ -47,6 +47,9 @@
     <string translatable="false" name="tmdb_movies_api_get_videos_path">videos</string>
     <string translatable="false" name="tmdb_movies_api_get_reviews_path">reviews</string>
 
+    <!-- the movie database api compliance string -->
+    <string translatable="true" name="tmdb_compliance_string">This product uses the TMDb API but is not endorsed or certified by TMDb.</string>
+
     <!--
          We are hardcoding the url for now. In the future, use TMDb configuration API to acquire
          these strings.
