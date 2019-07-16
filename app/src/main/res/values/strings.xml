@@ -21,6 +21,7 @@
     <!-- content description -->
     <string name="movie_poster_content_description">A graphic that is used to advertise a movie.</string>
     <string name="trailer_play_icon__content_description">A play icon</string>
+    <string name="tmdb_compliance_image_content_description">Powered by The Movie DB</string>
 
     <!-- keys for intent put extra -->
     <string translatable="false" name="movie_detail_poster_path_key">movie_detail_poster_path_key</string>
