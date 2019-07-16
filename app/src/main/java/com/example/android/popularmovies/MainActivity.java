@@ -27,6 +27,7 @@ import com.example.android.popularmovies.receiver.NetworkBroadcastReceiver;
 import com.example.android.popularmovies.tasks.IAsyncTaskCompleteListener;
 import com.example.android.popularmovies.tasks.MovieFavoriteDbQueryAsyncTask;
 import com.example.android.popularmovies.tasks.MovieListResultAsyncTask;
+import com.example.android.popularmovies.view.dialog.AppInfoDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -186,6 +187,13 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         // This shows the popup menu under the sort button on the action bar.
         View view = findViewById(R.id.action_sort_by_menuitem);
         showPopupMenu(view);
+        return true;
+      }
+
+      case R.id.action_info_menuitem:
+      {
+        // Show the app info dialog
+        AppInfoDialogFragment.newInstance().show(getSupportFragmentManager());
         return true;
       }
 
